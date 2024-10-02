@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Search App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Movie Search App</h1>
+    <input id="Moive" type="text" placeholder="Enter Movie Title">
+    <br>
+    <button id="search-button">Search</button>
+    <div id="movie-result"></div>
+    
+    <script>
+        const apiKey = '15e150e5'; // Your actual API key here
+
+        document.getElementById("search-button").addEventListener('click', async () => {
+            const query = document.getElementById('Moive').value;
+            const movie_result = document.getElementById("movie-result");
+            movie_result.innerHTML = ""; // Clear previous results
+
+            if (query) {
+                try {
+                    const response = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${apiKey}`);
+                    const data = await response.json();
+
+                    if (data.Response === 'True') {
+                        data.Search.forEach(movie => {
+                            const movieDiv = document.createElement('div');
+                            movieDiv.classList.add('movie'); // Fix class name typo
+                            movieDiv.innerHTML = `
+                                <h3>${movie.Title} (${movie.Year})</h3>
+                                <p>Type: ${movie.Type}</p>
+                                <img src="${movie.Poster}" alt="${movie.Title} Poster" width="100">
+                            `;
+                            movie_result.appendChild(movieDiv); // Append the movie div correctly
+                        });
+                    } else {
+                        movie_result.innerHTML = `<p>No movies found.</p>`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching movie data:', error);
+                    movie_result.innerHTML = `<p>Error fetching movie data.</p>`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
